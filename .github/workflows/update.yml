@@ -1,29 +1,43 @@
-name: Update Lost Ark Data
+name: Update Lost Ark Characters
 
 on:
-  push:
   schedule:
-    - cron: '0 15 * * *'  # 매일 KST 0시 (UTC 기준 15시)
-  workflow_dispatch:      # 수동 실행도 가능하게
+    - cron: '0 15 * * *'   # 매일 KST 자정
+  workflow_dispatch:
 
 jobs:
-  fetch-lostark-data:
+  fetch:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Fetch data from LostArk API
+    - name: Fetch character data
       run: |
-        curl -H "Authorization: Bearer ${{ secrets.LOSTARK_API_KEY }}" \
-          https://developer-lostark.game.onstove.com/news/notices \
-          -o LoskArkWidget/data.json
+        mkdir -p LostArkWidget
+        echo "{" > LostArkWidget/data.json
+
+        for name in "배틀뮹스터" "뮹화가" "소뮹이터" "에이징커브온알바생모코코" "에이징커브온망나니모코코" "이모여기도태심판하나주쇼"
+        do
+          curl -s -X GET "https://developer-lostark.game.onstove.com/armories/characters/$name" \
+            -H "accept: application/json" \
+            -H "authorization: Bearer ${{ secrets.LOSTARK_API_KEY }}" \
+            -o tmp.json
+
+          echo "\\"$name\\":" >> LostArkWidget/data.json
+          cat tmp.json >> LostArkWidget/data.json
+          if [ "$name" != "배틀뮹스터" ]; then
+            echo "," >> LostArkWidget/data.json
+          fi
+        done
+
+        echo "}" >> LostArkWidget/data.json
 
     - name: Commit and push
       run: |
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
-        git add public/data.json
-        git commit -m "Update Lost Ark data"
+        git add LostArkWidget/data.json
+        git commit -m "Update character info"
         git push
