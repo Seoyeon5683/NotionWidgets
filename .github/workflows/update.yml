@@ -8,6 +8,7 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    environment: github-pages  # ✅ 이 줄 추가 (Environment 이름)
 
     steps:
     - name: Checkout
@@ -22,7 +23,7 @@ jobs:
         do
           curl -s -X GET "https://developer-lostark.game.onstove.com/armories/characters/$name" \
             -H "accept: application/json" \
-            -H "authorization: Bearer ${{ secrets.LOSTARK_API_KEY }}" \
+            -H "authorization: Bearer ${{ secrets.LOSTARK_API_KEY }}"
             -o tmp.json
 
           echo "\\"$name\\":" >> LostArkWidget/data.json
