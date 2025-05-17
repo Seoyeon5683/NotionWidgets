@@ -8,42 +8,48 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    environment: github-pages  # ✅ 이 줄 추가 (Environment 이름)
+    environment: github-pages
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Install curl
-      run: |
+      - name: Install curl
+        run: |
           sudo apt-get update
           sudo apt-get install -y curl
 
-    - name: Fetch character data
-      run: |
-        mkdir -p LostArkWidget
-        echo "{" > LostArkWidget/data.json
+      - name: Fetch character data
+        run: |
+          mkdir -p LostArkWidget
+          echo "{" > LostArkWidget/data.json
 
-        for name in "배틀뮹스터" "뮹화가" "소뮹이터" "에이징커브온알바생모코코" "에이징커브온망나니모코코" "이모여기도태심판하나주쇼"
-        do
-          curl -s -X GET "https://developer-lostark.game.onstove.com/armories/characters/$name" \
-            -H "accept: application/json" \
-            -H "authorization: Bearer ${{ secrets.LOSTARK_API_KEY }}"
-            -o tmp.json
+          CHARACTERS=("배틀뮹스터" "뮹화가" "소뮹이터" "에이징커브온알바생모코코" "에이징커브온망나니모코코" "이모여기도태심판하나주쇼")
 
-          echo "\\"$name\\":" >> LostArkWidget/data.json
-          cat tmp.json >> LostArkWidget/data.json
-          if [ "$name" != "배틀뮹스터" ]; then
-            echo "," >> LostArkWidget/data.json
-          fi
-        done
+          for i in "${!CHARACTERS[@]}"; do
+            name="${CHARACTERS[$i]}"
+            encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$name'''))")
 
-        echo "}" >> LostArkWidget/data.json
+            echo "  \"$name\": " >> LostArkWidget/data.json
 
-    - name: Commit and push
-      run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
-        git add LostArkWidget/data.json
-        git commit -m "자동 업데이트: 캐릭터 데이터"
-        git push
+            curl -s -X GET "https://developer-lostark.game.onstove.com/armories/characters/$encoded" \
+              -H "accept: application/json" \
+              -H "authorization: Bearer ${{ secrets.LOSTARK_API_KEY }}" >> LostArkWidget/data.json
+
+            # 마지막 캐릭터가 아니면 쉼표 추가
+            if [ $i -lt $((${#CHARACTERS[@]} - 1)) ]; then
+              echo "," >> LostArkWidget/data.json
+            fi
+          done
+
+          echo "}" >> LostArkWidget/data.json
+          echo "=== 저장된 JSON ==="
+          cat LostArkWidget/data.json
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add LostArkWidget/data.json
+          git commit -m "자동 업데이트: 캐릭터 데이터"
+          git push
