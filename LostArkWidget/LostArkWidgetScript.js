@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    fetch("/LostArkWidget/data.json")
+    fetch("data.json")
       .then(res => res.json())
       .then(data => {
         const char = data[selected];
