@@ -14,6 +14,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Install curl
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+
     - name: Fetch character data
       run: |
         mkdir -p LostArkWidget
@@ -40,5 +45,5 @@ jobs:
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
         git add LostArkWidget/data.json
-        git commit -m "Update character info"
+        git commit -m "자동 업데이트: 캐릭터 데이터"
         git push
