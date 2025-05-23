@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <title>우리의 데이트 지도</title>
+        <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=%NAVERMAPID%"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <link rel="stylesheet" href="MyDateWidgetStyleSheet.css"/>
+    </head>
+    <body>
+        <div id="map"></div>
+        <button id="add-button" onclick="showPopup()">+</button>
+        <div id="popup">
+        <input id="title" placeholder="제목" />
+        <input
+            id="address"
+            placeholder="주소 (예: 서울숲)"
+            onblur="lookupAddress()"
+        />
+        <input id="lat" placeholder="위도" readonly />
+        <input id="lng" placeholder="경도" readonly />
+        <textarea id="desc" placeholder="설명"></textarea>
+        <button onclick="addMarker()">추가</button>
+        </div>
+        <script src="MyDateWidgetScript.js"></script>
+    </body>
+</html>
