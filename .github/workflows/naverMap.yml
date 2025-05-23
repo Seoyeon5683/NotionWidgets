@@ -21,17 +21,15 @@ jobs:
           sed -i 's/%NAVERMAPID%/${{ secrets.NAVERMAPID }}/g' MyDateWidget/MyDateWidget.html
           sed -i 's/%NAVERMAPKEY%/${{ secrets.NAVERMAPKEY }}/g' MyDateWidget/MyDateWidget.html
 
-      - name: Configure Git user
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
+      - name: Copy to index.html for GitHub Pages
+        run: cp MyDateWidget/MyDateWidget.html MyDateWidget/index.html
 
-      - name: Commit replaced HTML
+      - name: Commit replaced files
         run: |
-          git add MyDateWidget/MyDateWidget.html
-          git commit -m "Apply NaverMap secrets to HTML" || echo "No changes to commit"
+          git add MyDateWidget/MyDateWidget.html MyDateWidget/index.html
+          git commit -m "Apply NaverMap secrets and set index.html" || echo "No changes to commit"
           git push
-
+          
       - name: Deploy MyDateWidget folder to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
