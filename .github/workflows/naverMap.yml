@@ -16,21 +16,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Replace Naver Map secrets
+        run: |
+          sed -i 's/%NAVERMAPID%/${{ secrets.NAVERMAPID }}/g' MyDateWidget/MyDateWidget.html
+          sed -i 's/%NAVERMAPKEY%/${{ secrets.NAVERMAPKEY }}/g' MyDateWidget/MyDateWidget.html
+
       - name: Configure Git user
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
 
-      - name: Commit updated markers.json
+      - name: Commit replaced HTML
         run: |
-          git add MyDateWidget/markers.json
-          git commit -m "자동 업데이트된 markers.json" || echo "No changes to commit"
+          git add MyDateWidget/MyDateWidget.html
+          git commit -m "Apply NaverMap secrets to HTML" || echo "No changes to commit"
           git push
-
-      - name: Replace Naver Map secrets
-        run: |
-          sed -i 's/%NAVERMAPID%/${{ secrets.NAVERMAPID }}/g' MyDateWidget/MyDateWidget.html
-          sed -i 's/%NAVERMAPKEY%/${{ secrets.NAVERMAPKEY }}/g' MyDateWidget/MyDateWidget.html
 
       - name: Deploy MyDateWidget folder to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
