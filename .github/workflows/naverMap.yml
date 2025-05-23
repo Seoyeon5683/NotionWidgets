@@ -21,7 +21,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
 
-      - name: Commit updated MyDateWidget/markers.json
+      - name: Commit updated markers.json
         run: |
           git add MyDateWidget/markers.json
           git commit -m "자동 업데이트된 markers.json" || echo "No changes to commit"
@@ -32,8 +32,8 @@ jobs:
           sed -i 's/%NAVERMAPID%/${{ secrets.NAVERMAPID }}/g' MyDateWidget/MyDateWidget.html
           sed -i 's/%NAVERMAPKEY%/${{ secrets.NAVERMAPKEY }}/g' MyDateWidget/MyDateWidget.html
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy MyDateWidget folder to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: ./MyDateWidget
